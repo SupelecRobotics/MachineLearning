@@ -43,7 +43,7 @@ class RobotsFinder:
     def getBasePos(self, x, y, w, h):
         xBase = x + w/2
         yBase = y + h + (float(self.ROBOTS_HEIGHT)/float(self.MARK_HEIGHT)) * h
-        return (int(xBase), int(yBase))
+        return np.array([int(xBase), int(yBase)])
 
     def process(self,frame):
 
@@ -57,13 +57,14 @@ class RobotsFinder:
         contours,_ = cv2.findContours(eroded.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
         validContours = []
-        basesPos = []
+        basesPos = np.empty([0,2],float)
 
         for cnt in contours:
             x,y,w,h = cv2.boundingRect(cnt)
             ratio = float(w) / float(h)
             if(cv2.matchShapes(cnt, self.refContours[0], 1, 1) < self.param["matchMax"]/float(1000) and w > self.wMin and h > self.hMin and ratio > self.param["ratioMin"] and ratio < self.param["ratioMax"]):
                 validContours.append(cnt)
-                basesPos.append(self.getBasePos(x,y,w,h))
+                #basesPos.append(self.getBasePos(x,y,w,h))
+                basesPos = np.vstack((basesPos, self.getBasePos(x,y,w,h)))
 
         return basesPos, eroded, validContours

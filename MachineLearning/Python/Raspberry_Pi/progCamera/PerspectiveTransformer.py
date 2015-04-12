@@ -18,4 +18,4 @@ class PerspectiveTransformer:
             self.M,_ = cv2.findHomography(frameRefPoints, tableRefPoints, cv2.RANSAC,5.0)
 
     def transform(self, srcPoints):
-        return cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M).reshape(-1,2)
+        return cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M).tolist()

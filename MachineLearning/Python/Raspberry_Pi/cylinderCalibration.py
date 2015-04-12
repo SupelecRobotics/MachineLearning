@@ -2,17 +2,39 @@ import pickle
 import cv2
 import numpy as np
 import ImageProcessor
+import CameraUndistorter
+
+color = 0 # 0 : yellow, 1 : green
 
 def nothing(x):
     pass
 
+def mouseCallback(event,x,y,flags,param):
+    if(event == cv2.EVENT_LBUTTONDOWN):
+        param["roi"].append((x,y))
+    elif(event == cv2.EVENT_RBUTTONDOWN):
+        if(len(param["roi"]) > 0):
+            param["roi"].pop()
+
 def saveParam(param):
-    with open('CylinderFinder.dat', 'w') as file:
+
+    if(color == 0):
+        path = 'CylinderFinder_yellow.dat'
+    else:
+        path = 'CylinderFinder_green.dat'
+    
+    with open(path, 'w') as file:
         pickler = pickle.Pickler(file)
         pickler.dump(param)
 
 def loadParam():
-    with open('CylinderFinder.dat', 'r') as file:
+
+    if(color == 0):
+        path = 'CylinderFinder_yellow.dat'
+    else:
+        path = 'CylinderFinder_green.dat'
+    
+    with open(path, 'r') as file:
         depickler = pickle.Unpickler(file)
         param = depickler.load()
         return param
@@ -41,7 +63,7 @@ def updateTrackbars(param):
     cv2.setTrackbarPos('Vmax', 'Colors', param["colorMax"][2])
     cv2.setTrackbarPos('MatchMax', 'Match max', param["matchMax"])
 
-def readParamsFromTrackbars():
+def readParamsFromTrackbars(param):
     colorMin = np.array([cv2.getTrackbarPos('Hmin', 'Colors'),
                          cv2.getTrackbarPos('Smin', 'Colors'),
                          cv2.getTrackbarPos('Vmin', 'Colors')])
@@ -50,13 +72,15 @@ def readParamsFromTrackbars():
                          cv2.getTrackbarPos('Vmax', 'Colors')])
     matchMax = cv2.getTrackbarPos('MatchMax', 'Match max')
     
-    param = {"colorMin":colorMin, "colorMax":colorMax, "matchMax":matchMax}
+    param["colorMin"] = colorMin
+    param["colorMax"] = colorMax
+    param["matchMax"] = matchMax
 
-    return param
-
-def cropFrameAddContours(frame, mask, contours):
+def cropFrameAddContours(frame, mask, contours, roiPts):
     cropped = cv2.bitwise_and(frame, frame, mask=mask)
     cv2.drawContours(cropped, contours, -1, (255, 0, 0))
+    if(len(roiPts) >= 2):
+        cv2.polylines(cropped, np.array([roiPts]), False, (255,255,255), 4)
     return cropped
 
 cap = cv2.VideoCapture('http://10.13.152.226:8554/')
@@ -64,19 +88,27 @@ end = False
 
 cylinderFinder = ImageProcessor.CylinderFinder()
 
+undistorter = CameraUndistorter.CameraUndistorter()
+undistorter.loadParam()
+
 createTrackbars()
+
+cv2.namedWindow('Result')
+param = {"roi":[]}
+cv2.setMouseCallback('Result', mouseCallback, param)
 
 while(cap.isOpened() and not end):
     ret,frame = cap.read()
-    param = readParamsFromTrackbars()
+    readParamsFromTrackbars(param)
     cylinderFinder.setParam(param)
 
     if(ret):
+        #frame = undistorter.undistort(frame)
+        frame = cv2.GaussianBlur(frame, (5,5), 0)
         hsvFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         _,mask,validContours = cylinderFinder.process(hsvFrame)
-        finalFrame = cropFrameAddContours(frame, mask, validContours)
-        cv2.imshow('Result', finalFrame)
-        
+        finalFrame = cropFrameAddContours(frame, mask, validContours, param["roi"])
+        cv2.imshow('Result', finalFrame)       
         
     key = cv2.waitKey(1) & 0xFF
     if(key == ord('q')):
@@ -86,6 +118,7 @@ while(cap.isOpened() and not end):
     elif(key == ord('l')):
         param = loadParam()
         updateTrackbars(param)
+        cv2.setMouseCallback('Result', mouseCallback, param)
 
 cap.release()        
 cv2.destroyAllWindows()

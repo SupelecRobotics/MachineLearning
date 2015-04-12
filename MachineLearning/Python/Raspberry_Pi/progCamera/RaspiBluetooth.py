@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 
 def convertNbTo4Char(nb):
-    strNb = str(int(round(nb)))
+    strNb = str(round(nb))
 
     l = len(strNb)
     if(l < 4):
@@ -14,10 +14,16 @@ def convertNbTo4Char(nb):
 
     return strNb
 
-def sendCoords(blueTSer, objectType, coords):
+def sendCoordsOfObject(blueTSer, objectType, coords):
      for i in range(0, len(coords)):
-        msg = "a" + str(i) + convertNbTo4Char(coords[i][0]) + convertNbTo4Char(coords[i][1])
+        msg = objectType + str(i) + convertNbTo4Char(coords[i][0]) + convertNbTo4Char(coords[i][1])
         blueTSer.write(msg)
+
+def sendCoords(blueTSer, tableCoords):
+    sendCoordsOfObject(blueTSer, 'c', tableCoords["cylindersYellow"])
+    sendCoordsOfObject(blueTSer, 'd', tableCoords["cylindersGreen"])
+    sendCoordsOfObject(blueTSer, 't', tableCoords["tennisBall"])
+    sendCoordsOfObject(blueTSer, 'r', tableCoords["robots"])
     
 
 def bluetoothInit():
