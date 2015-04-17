@@ -18,25 +18,32 @@ blueTSer = RaspiBluetooth.bluetoothInit()
 #undistorter.loadParam()
 
 #Ouverture de la caméra
-#cap = cv2.VideoCapture("/dev/video0")
-cap = cv2.VideoCapture(0)
-cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 720)
+cap = cv2.VideoCapture('/dev/video0')
+#cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1280)
+#cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 720)
 
 end = False
 
 frameProcessors,perspectiveTransformer = functions.initProcessors()
 
+#TEMPORAIRE
+testPic = cv2.imread('Tableframe.jpg')
+#FIN
 
 while(cap.isOpened() and not end):
     ret,frame = cap.read()
+
+    #TEMPORAIRE
+    frame = testPic
+    #FIN
     
     if(ret):
         #frame = undistorter.undistort(frame)
         hsvFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        frameCoords = findObjects(hsvFrame, frameProcessors)
-        tableCoords = getTableCoords(frameCoords, perspectiveTransformer)
-        sendCoords(blueTSer, tableCoords)
+        frameCoords = functions.findObjects(hsvFrame, frameProcessors)
+        tableCoords = functions.getTableCoords(frameCoords, perspectiveTransformer)
+        print tableCoords["robots"]
+        RaspiBluetooth.sendCoords(blueTSer, tableCoords)
 
 cap.release()
 cv2.destroyAllWindows()

@@ -4,7 +4,7 @@ import numpy as np
 import ImageProcessor
 import CameraUndistorter
 
-color = 0 # 0 : yellow, 1 : green
+color = 1 # 0 : yellow, 1 : green
 
 def nothing(x):
     pass

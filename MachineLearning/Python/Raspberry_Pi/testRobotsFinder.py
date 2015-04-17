@@ -3,24 +3,26 @@ import cv2
 import PerspectiveTransformer
 import RobotsFinder
 
+robotID = 0
+
 def drawCircles(table, points):
-    if(points.size == 0):
+    if(len(points) == 0):
         return table
     tableWithCircles = table.copy()
-    for i in range(0, points.shape[0]):
-        cv2.circle(tableWithCircles,(int(points[i][0][0]),int(points[i][0][1])),5,(255,255,255),2)
+    for i in range(0, len(points)):
+        cv2.circle(tableWithCircles,(int(points[i][0]),int(points[i][1])),5,(255,255,255),2)
     return tableWithCircles
 
-cap = cv2.VideoCapture('http://10.13.152.226:8554/') #Ouverture de la caméra
+cap = cv2.VideoCapture('http://169.254.22.56:8554/') #Ouverture de la caméra
 end = False
 
-robotsFinder = RobotsFinder.RobotsFinder()
-robotsFinder.loadParam()
+robotsFinder = RobotsFinder.RobotsFinder(robotID)
+robotsFinder.loadParamFromFile()
 
 perspectiveTransformer = PerspectiveTransformer.PerspectiveTransformer()
 perspectiveTransformer.loadParamFromFile()
 
-table = cv2.imread('schema_table.png')
+table = cv2.imread('schema_table2.png')
 
 while(cap.isOpened() and not end):
     ret,frame = cap.read()
@@ -33,10 +35,10 @@ while(cap.isOpened() and not end):
         if(len(robotsFrameCoords) > 0):
             robotsTableCoords = perspectiveTransformer.transform(np.array(robotsFrameCoords, np.float32).reshape(-1,1,2))
             tableWithCircles = drawCircles(table, robotsTableCoords)
-            cv2.circle(frame,robotsFrameCoords[0],5,(255,255,255),2)
+            cv2.circle(frame,(int(robotsFrameCoords[0][0]), int(robotsFrameCoords[0][1])),5,(255,255,255),2)
+            cv2.imshow('Table', tableWithCircles)
 
         cv2.imshow('Cam', frame)
-        cv2.imshow('Table', tableWithCircles)
 
     if(cv2.waitKey(1) & 0xFF == ord('q')):
         end = True

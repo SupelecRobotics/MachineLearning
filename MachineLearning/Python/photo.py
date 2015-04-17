@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 end = False
-cap = cv2.VideoCapture('http://10.13.152.226:8554/')
+cap = cv2.VideoCapture('http://169.254.22.56:8554/')
 
 while(cap.isOpened() and not end):
 

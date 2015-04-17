@@ -9,6 +9,7 @@ ret = False
 while(not ret):
     ret,frame = cap.read()
 
+cv2.imshow("Test", frame)
 frame = frame[:,:,::-1]
 plt.imshow(frame)
 plt.show()

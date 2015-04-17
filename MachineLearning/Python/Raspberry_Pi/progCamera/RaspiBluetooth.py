@@ -15,14 +15,16 @@ def convertNbTo4Char(nb):
     return strNb
 
 def sendCoordsOfObject(blueTSer, objectType, coords):
-     for i in range(0, len(coords)):
-        msg = objectType + str(i) + convertNbTo4Char(coords[i][0]) + convertNbTo4Char(coords[i][1])
-        blueTSer.write(msg)
+    if(coords is not None):
+         for i in range(0, len(coords)):
+            msg = objectType + str(i) + convertNbTo4Char(coords[i][0]) + convertNbTo4Char(coords[i][1])
+            print msg
+            blueTSer.write(msg)
 
 def sendCoords(blueTSer, tableCoords):
-    sendCoordsOfObject(blueTSer, 'c', tableCoords["cylindersYellow"])
-    sendCoordsOfObject(blueTSer, 'd', tableCoords["cylindersGreen"])
-    sendCoordsOfObject(blueTSer, 't', tableCoords["tennisBall"])
+    #sendCoordsOfObject(blueTSer, 'c', tableCoords["cylindersYellow"])
+    #sendCoordsOfObject(blueTSer, 'd', tableCoords["cylindersGreen"])
+    #sendCoordsOfObject(blueTSer, 't', tableCoords["tennisBall"])
     sendCoordsOfObject(blueTSer, 'r', tableCoords["robots"])
     
 
@@ -47,7 +49,7 @@ def bluetoothInit():
     BlueTSer.write("AT+RMAAD\r\n")
     print "RMAAD sent"
     time.sleep(pause)
-    BlueTSer.write("AT+PSWD=6666\r\n")
+    BlueTSer.write("AT+PSWD=7655\r\n")
     print "PSWD sent"
     time.sleep(pause)
     BlueTSer.write("AT+ROLE=0\r\n")

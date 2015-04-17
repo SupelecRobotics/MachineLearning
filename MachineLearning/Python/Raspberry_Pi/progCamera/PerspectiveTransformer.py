@@ -18,4 +18,11 @@ class PerspectiveTransformer:
             self.M,_ = cv2.findHomography(frameRefPoints, tableRefPoints, cv2.RANSAC,5.0)
 
     def transform(self, srcPoints):
-        return cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M).tolist()
+        if(srcPoints.size > 0):
+            tab = cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M)[0].tolist()
+            for i in range(0,len(tab)):
+                if(tab[i][0] < 0 or tab[i][0] >= 2000 or tab[i][1] < 0 or tab[i][1] >= 3000):
+                    del tab[i]
+            return tab
+        else:
+            return None

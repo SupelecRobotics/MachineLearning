@@ -1,14 +1,22 @@
 import pickle
+import sys
 import cv2
 import numpy as np
-import CameraUndistorter
+#import CameraUndistorter
 
 end = False
+
+if(sys.argv[1] == 'm'):
+    streamIP = 'http://169.254.22.56:8554/'
+elif(sys.argv[1] == 'l'):
+    streamIP = 'http://169.254.22.56:8554/'
+else:
+    streamIP = 'http://169.254.22.56:8554/'
 
 class PointsList:
 
     def __init__(self):
-        self.tablePoints = {"Coin gauche":(0,0), "Coin droit":(0,2000), "Coin zone gauche":(400,400), "Coin zone droit":(1600,400), "Milieu depart":(1000,650)}
+        self.tablePoints = {"Coin gauche":(0,0), "Coin droit":(0,2000), "Coin zone gauche":(400,400), "Coin zone droit":(1600,400), "Milieu depart":(1000,650), "Repere milieu":(300,1500), "Autocollant 1":(1200,910)}
         self.indexes = self.tablePoints.keys()
         self.i = 0
         
@@ -50,7 +58,7 @@ def camCallback(event,x,y,flags,param):
         param.back()
 
 def saveParam(ptsList):
-    with open('PerspectiveTransformer.dat', 'w') as file:
+    with open('PerspectiveTransformer_' + sys.argv[1] + '.dat', 'w') as file:
         pickler = pickle.Pickler(file)
 
         tableList = []
@@ -59,13 +67,15 @@ def saveParam(ptsList):
             tableList.append(ptsList.tablePoints[k])
             camList.append(ptsList.camPoints[k])
         
-        pickler.dump((tableList,camList))
+        pickler.dump((camList,tableList))
         print tableList
         print camList
 
 
-cap = cv2.VideoCapture(0)
-#cap = cv2.VideoCapture('http://10.13.152.226:8554/')
+#cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(streamIP)
+
+print cap.isOpened()
 
 cv2.namedWindow('Cam')
 

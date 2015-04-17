@@ -6,6 +6,8 @@ import PerspectiveTransformer
 
 def initProcessors():
 
+    frameProcessors = {}
+    
     frameProcessors["cylindersYellow"] = CylinderFinder.CylinderFinder()
     frameProcessors["cylindersYellow"].loadParamFromFile(0)
 
@@ -15,7 +17,7 @@ def initProcessors():
     frameProcessors["tennisBall"] = TennisBallFinder.TennisBallFinder()
     frameProcessors["tennisBall"].loadParamFromFile()
 
-    frameProcessors["robots"] = RobotsFinder.RobotsFinder()
+    frameProcessors["robots"] = RobotsFinder.RobotsFinder(0)
     frameProcessors["robots"].loadParamFromFile()
 
     perspectiveTransformer = PerspectiveTransformer.PerspectiveTransformer()
@@ -26,17 +28,23 @@ def initProcessors():
 
 
 def findObjects(frame, frameProcessors):
-    frameCoords["cylindersYellow"] = frameProcessors["cylindersYellow"].process(frame)
-    frameCoords["cylindersGreen"] = frameProcessors["cylindersGreen"].process(frame)
-    frameCoords["tennisBall"] = frameProcessors["tennisBall"].process(frame)
-    frameCoords["robots"] = frameProcessors["robots"].process(frame)
+
+    frameCoords = {}
+    
+    frameCoords["cylindersYellow"] = frameProcessors["cylindersYellow"].process(frame)[0]
+    frameCoords["cylindersGreen"] = frameProcessors["cylindersGreen"].process(frame)[0]
+    frameCoords["tennisBall"] = frameProcessors["tennisBall"].process(frame)[0]
+    frameCoords["robots"] = frameProcessors["robots"].process(frame)[0]
 
     return frameCoords
 
 
 def getTableCoords(frameCoords, perspectiveTransformer):
+
+    tableCoords = {}
+    
     tableCoords["cylindersYellow"] = perspectiveTransformer.transform(frameCoords["cylindersYellow"])
-    tableCoords["cylindersGreen"] = perspectiveTransformer.transform(frameCoords["cylindersGreen")
+    tableCoords["cylindersGreen"] = perspectiveTransformer.transform(frameCoords["cylindersGreen"])
     tableCoords["tennisBall"] = perspectiveTransformer.transform(frameCoords["tennisBall"])
     tableCoords["robots"] = perspectiveTransformer.transform(frameCoords["robots"])
 

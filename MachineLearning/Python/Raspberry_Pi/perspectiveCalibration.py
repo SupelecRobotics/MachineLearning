@@ -1,7 +1,20 @@
+import sys
 import pickle
 import cv2
 import numpy as np
-import CameraUndistorter
+#import CameraUndistorter
+
+TABLE_W = 2000
+TABLE_H = 3000
+IMG_W = 418
+IMG_H = 626
+
+if(sys.argv[1] == 'm'):
+    streamIP = 'http://169.254.22.57:8554/'
+elif(sys.argv[1] == 'l'):
+    streamIP = 'http://169.254.22.57:8554/'
+else:
+    streamIP = 'http://169.254.22.57:8554/'
 
 class PointsList:
 
@@ -12,7 +25,7 @@ class PointsList:
         self.currentTablePoint = (0,0)
 
     def addTablePoint(self, x, y):
-        self.currentTablePoint = (x,y)
+        self.currentTablePoint = (int(x*float(TABLE_W)/float(IMG_W)),int(y*float(TABLE_H)/float(IMG_H)))
         self.waitingForCamPoint = True
 
     def addCamPoint(self, x, y):
@@ -27,11 +40,11 @@ class PointsList:
         tableWithCircles = table.copy()
         frameWithCircles = frame.copy()
         for i in range(0, len(self.camPoints)):
-            cv2.circle(tableWithCircles,self.tablePoints[i],5,(255,0,0),2)
+            cv2.circle(tableWithCircles,(int(self.tablePoints[i][0]*float(IMG_W)/float(TABLE_W)),int(self.tablePoints[i][1]*float(IMG_H)/float(TABLE_H))),5,(255,0,0),2)
             cv2.circle(frameWithCircles,self.camPoints[i],5,(255,0,0),2)
 
         if(self.waitingForCamPoint):
-            cv2.circle(tableWithCircles,self.currentTablePoint,5,(255,0,0),2)
+            cv2.circle(tableWithCircles,(int(self.currentTablePoint[0]*float(IMG_W)/float(TABLE_W)),int(self.currentTablePoint[1]*float(IMG_H)/float(TABLE_H))),5,(255,0,0),2)
 
         return tableWithCircles,frameWithCircles
 
@@ -43,23 +56,24 @@ def tableCallback(event,x,y,flags,param):
 def camCallback(event,x,y,flags,param):
     if(event == cv2.EVENT_LBUTTONDOWN):
         param.addCamPoint(x,y)
+        #param.addCamPoint(x,y)
 
 def saveParam(ptsList):
-    with open('PerspectiveTransformer.dat', 'w') as file:
+    with open('PerspectiveTransformer_' + sys.argv[1] + '.dat', 'w') as file:
         pickler = pickle.Pickler(file)
         pickler.dump((ptsList.camPoints,ptsList.tablePoints))
         
 def loadParam(ptsList):
-    with open('PerspectiveTransformer.dat', 'r') as file:
+    with open('PerspectiveTransformer_' + sys.argv[1] + '.dat', 'r') as file:
         depickler = pickle.Unpickler(file)
         ptsList.camPoints,ptsList.tablePoints = depickler.load()
 
-undistorter = CameraUndistorter.CameraUndistorter()
-undistorter.loadParam()
+#undistorter = CameraUndistorter.CameraUndistorter()
+#undistorter.loadParam()
 
-cap = cv2.VideoCapture('http://10.13.152.226:8554/')
+cap = cv2.VideoCapture('http://169.254.22.56:8554/')
 end = False
-table = cv2.imread('schema_table.png')
+table = cv2.imread('schema_table2.png')
 
 cv2.namedWindow('Table')
 cv2.namedWindow('Cam')
@@ -68,9 +82,17 @@ ptsList = PointsList()
 cv2.setMouseCallback('Table', tableCallback, ptsList)
 cv2.setMouseCallback('Cam', camCallback, ptsList)
 
+#TEMPORAIRE
+testPic = cv2.imread('Tableframe.jpg')
+#FIN
+
 while(cap.isOpened() and not end):
 
     ret,frame = cap.read()
+
+    #TEMPORAIRE
+    frame = testPic
+    #FIN
 
     if(ret):
         #frame = undistorter.undistort(frame)

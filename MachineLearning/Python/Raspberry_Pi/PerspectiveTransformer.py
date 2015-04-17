@@ -2,6 +2,8 @@
 import numpy as np
 import cv2
 
+camPos = 'm'
+
 class PerspectiveTransformer:
 
     # Classe qui gère la transformation entre les coordonnées d'un point sur une frame
@@ -10,7 +12,7 @@ class PerspectiveTransformer:
     
 
     def loadParamFromFile(self):
-        with open('PerspectiveTransformer.dat', 'r') as file:
+        with open('PerspectiveTransformer_' + camPos + '.dat', 'r') as file:
             depickler = pickle.Unpickler(file)
             data = depickler.load()
             frameRefPoints = np.float32(data[0])
@@ -18,4 +20,11 @@ class PerspectiveTransformer:
             self.M,_ = cv2.findHomography(frameRefPoints, tableRefPoints, cv2.RANSAC,5.0)
 
     def transform(self, srcPoints):
-        return cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M)
+        if(srcPoints.size > 0):
+            tab = cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M)[0].tolist()
+            for i in range(0,len(tab)):
+                if(tab[i][0] < 0 or tab[i][0] >= 2000 or tab[i][1] < 0 or tab[i][1] >= 3000):
+                    del tab[i]
+            return tab
+        else:
+            return None

@@ -2,25 +2,29 @@ import pickle
 import cv2
 import numpy as np
 import RobotsFinder
-import CameraUndistorter
+import sys
+#import CameraUndistorter
 
 def nothing(x):
     pass
 
-def mouseCallback(event,x,y,flags,param):
-    if(event == cv2.EVENT_LBUTTONDOWN):
-        param["roi"].append((x,y))
-    elif(event == cv2.EVENT_RBUTTONDOWN):
-        if(len(param["roi"]) > 0):
-            param["roi"].pop()
+def mouseCallback(event,x,y,flags,cbParam):
+    param,mode = cbParam
+
+    if(mode == 0):
+        if(event == cv2.EVENT_LBUTTONDOWN):
+            param["roi"].append((x,y))
+        elif(event == cv2.EVENT_RBUTTONDOWN):
+            if(len(param["roi"]) > 0):
+                param["roi"].pop()
 
 def saveParam(param):
-    with open('RobotsFinder.dat', 'w') as file:
+    with open('RobotsFinder_' + sys.argv[1] + '.dat', 'w') as file:
         pickler = pickle.Pickler(file)
         pickler.dump(param)
 
 def loadParam():
-    with open('RobotsFinder.dat', 'r') as file:
+    with open('RobotsFinder_' + sys.argv[1] + '.dat', 'r') as file:
         depickler = pickle.Unpickler(file)
         param = depickler.load()
         return param
@@ -64,27 +68,37 @@ def readParamsFromTrackbars(param):
 
 def cropFrameAddContours(frame, mask, contours, roiPts):
     cropped = cv2.bitwise_and(frame, frame, mask=mask)
-    cv2.drawContours(cropped, contours, -1, (255, 0, 0))
+    cv2.drawContours(cropped, contours, -1, (255, 0, 0),3)
     if(len(roiPts) >= 2):
         cv2.polylines(cropped, np.array([roiPts]), False, (255,255,255), 4)
     return cropped
 
-cap = cv2.VideoCapture('http://10.13.152.226:8554/')
+cap = cv2.VideoCapture('http://169.254.22.56:8554/')
+#cap = cv2.VideoCapture(0)
 end = False
 
-robotsFinder = RobotsFinder.RobotsFinder()
+robotsFinder = RobotsFinder.RobotsFinder(sys.argv[1])
 
-undistorter = CameraUndistorter.CameraUndistorter()
-undistorter.loadParam()
+#undistorter = CameraUndistorter.CameraUndistorter()
+#undistorter.loadParam()
 
 createTrackbars()
 
 cv2.namedWindow('Result')
-param = {"roi":[]}
-cv2.setMouseCallback('Result', mouseCallback, param)
+mode = 0
+param = {"roi":[], "upstairs":[]}
+cbParam = (param, mode)
+cv2.setMouseCallback('Result', mouseCallback, cbParam)
+
+#TEMPORAIRE
+testPic = cv2.imread('Tableframe.jpg')
+#FIN
 
 while(cap.isOpened() and not end):
     ret,frame = cap.read()
+    #TEMPORAIRE
+    frame = testPic
+    #FIN
     readParamsFromTrackbars(param)
     robotsFinder.setParam(param)
 
@@ -104,7 +118,8 @@ while(cap.isOpened() and not end):
     elif(key == ord('l')):
         param = loadParam()
         updateTrackbars(param)
-        cv2.setMouseCallback('Result', mouseCallback, param)
+        cbParam = (param, mode)
+        cv2.setMouseCallback('Result', mouseCallback, cbParam)
 
 cap.release()        
 cv2.destroyAllWindows()
