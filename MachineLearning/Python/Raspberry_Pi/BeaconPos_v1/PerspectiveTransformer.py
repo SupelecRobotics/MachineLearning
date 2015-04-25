@@ -2,9 +2,10 @@
 import numpy as np
 import cv2
 
-camPos = 'm'
-
 class PerspectiveTransformer:
+
+    def __init__(self, camPos):
+        self.camPos = camPos
 
     # Classe qui gère la transformation entre les coordonnées d'un point sur une frame
     # et ses coordonnées réelles sur la table.
@@ -12,7 +13,7 @@ class PerspectiveTransformer:
     
 
     def loadParamFromFile(self):
-        with open('PerspectiveTransformer_' + camPos + '.dat', 'r') as file:
+        with open('PerspectiveTransformer_' + self.camPos + '.dat', 'r') as file:
             depickler = pickle.Unpickler(file)
             data = depickler.load()
             frameRefPoints = np.float32(data[0])

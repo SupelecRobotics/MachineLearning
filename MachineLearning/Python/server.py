@@ -11,15 +11,18 @@ def recvall(sock, count):
         count -= len(newbuf)
     return buf
 
-TCP_IP = 'localhost'
-TCP_PORT = 5001
+TCP_IP = ''
+TCP_PORT = 5003
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((TCP_IP, TCP_PORT))
 s.listen(True)
 conn, addr = s.accept()
 
 end  = False
+
+cv2.namedWindow('SERVER')
 
 while(not end):
 

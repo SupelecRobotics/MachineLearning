@@ -10,7 +10,7 @@ IMG_W = 418
 IMG_H = 626
 
 if(sys.argv[1] == 'm'):
-    streamIP = 'http://169.254.22.57:8554/'
+    streamIP = 'http://169.254.22.56:8554/'
 elif(sys.argv[1] == 'l'):
     streamIP = 'http://169.254.22.57:8554/'
 else:
@@ -71,7 +71,7 @@ def loadParam(ptsList):
 #undistorter = CameraUndistorter.CameraUndistorter()
 #undistorter.loadParam()
 
-cap = cv2.VideoCapture('http://169.254.22.56:8554/')
+cap = cv2.VideoCapture(streamIP)
 end = False
 table = cv2.imread('schema_table2.png')
 
@@ -83,7 +83,7 @@ cv2.setMouseCallback('Table', tableCallback, ptsList)
 cv2.setMouseCallback('Cam', camCallback, ptsList)
 
 #TEMPORAIRE
-testPic = cv2.imread('Tableframe.jpg')
+#testPic = cv2.imread('Tableframe.jpg')
 #FIN
 
 while(cap.isOpened() and not end):
@@ -91,7 +91,7 @@ while(cap.isOpened() and not end):
     ret,frame = cap.read()
 
     #TEMPORAIRE
-    frame = testPic
+    #frame = testPic
     #FIN
 
     if(ret):

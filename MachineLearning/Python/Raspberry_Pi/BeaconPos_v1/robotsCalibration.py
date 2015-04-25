@@ -91,13 +91,13 @@ cbParam = (param, mode)
 cv2.setMouseCallback('Result', mouseCallback, cbParam)
 
 #TEMPORAIRE
-testPic = cv2.imread('Tableframe.jpg')
+#testPic = cv2.imread('Tableframe.jpg')
 #FIN
 
 while(cap.isOpened() and not end):
     ret,frame = cap.read()
     #TEMPORAIRE
-    frame = testPic
+    #frame = testPic
     #FIN
     readParamsFromTrackbars(param)
     robotsFinder.setParam(param)

@@ -4,13 +4,16 @@ import cv2
 
 class PerspectiveTransformer:
 
+    def __init__(self, camPos):
+        self.camPos = camPos
+
     # Classe qui gère la transformation entre les coordonnées d'un point sur une frame
     # et ses coordonnées réelles sur la table.
     # Charge ses paramètres depuis le fichier PerspectiveTransformer.dat, lui-même créé par le programme perspectiveCalibration.py
     
 
     def loadParamFromFile(self):
-        with open('PerspectiveTransformer.dat', 'r') as file:
+        with open('PerspectiveTransformer_' + self.camPos + '.dat', 'r') as file:
             depickler = pickle.Unpickler(file)
             data = depickler.load()
             frameRefPoints = np.float32(data[0])

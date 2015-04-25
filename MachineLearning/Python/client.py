@@ -2,7 +2,7 @@ import socket
 import cv2
 import numpy
 
-TCP_IP = 'localhost'
+TCP_IP = '192.168.2.1'
 TCP_PORT = 5001
 
 sock = socket.socket()
@@ -12,7 +12,7 @@ cap = cv2.VideoCapture(0)
 
 encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
 
-cv2.namedWindow('Client', cv2.WINDOW_NORMAL)
+cv2.namedWindow('Client')
 
 end = False
 
@@ -20,6 +20,7 @@ while(cap.isOpened() and not end):
     
     ret,frame = cap.read()
     if(ret):
+        cv2.imshow('Client',frame)
         result, imgencode = cv2.imencode('.jpg', frame, encode_param)
         data = numpy.array(imgencode)
         stringData = data.tostring()
