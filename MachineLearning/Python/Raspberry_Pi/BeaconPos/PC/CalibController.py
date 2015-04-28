@@ -16,19 +16,17 @@ class CalibController:
 
         self.colorParams = []
 
-        self.selectedRobType = 0
-
     def connectLAN(self):
         self.beaconPos.connectLAN('192.168.2.2')
         if(self.beaconPos.isConnected()):
             self.colorParams = self.beaconPos.getColorParams()
-            HSV = self.colorParams[self.selectedRobType]
+            HSV = self.colorParams[self.statusWindow.getSelectedRobType()]
             self.paramWindow.setHSV(HSV[0], HSV[1])
             self.statusWindow.setRefPoints(self.beaconPos.getRefPoints())
 
     def sendColorParams(self):
 
-        self.colorParams[self.selectedRobType] = self.paramWindow.getHSV()
+        self.colorParams[self.statusWindow.getSelectedRobType()] = self.paramWindow.getHSV()
 
         self.beaconPos.setColorParams(self.colorParams)
                        
@@ -42,8 +40,9 @@ class CalibController:
 
     def loadColorParams(self):
 
-        colorParams = self.beaconPos.getColorParams()
-        self.paramWindow.setHSV(colorParams[self.selectedRobType][0],colorParams[self.selectedRobType][1])
+        self.colorParams = self.beaconPos.getColorParams()
+        selectedRobType = self.statusWindow.getSelectedRobType()
+        self.paramWindow.setHSV(self.colorParams[selectedRobType][0],self.colorParams[selectedRobType][1])
 
     def loadPerspectiveParams(self):
         self.statusWindow.setRefPoints(self.beaconPos.getRefPoints())
@@ -65,7 +64,9 @@ class CalibController:
 
         self.statusWindow.selectNextRobType()
 
-        self.paramWindow.setHSV(self.colorParams[self.selectedRobType][0],self.colorParams[self.selectedRobType][1])
+        selectedRobType = self.statusWindow.getSelectedRobType()
+
+        self.paramWindow.setHSV(self.colorParams[selectedRobType][0],self.colorParams[selectedRobType][1])
 
 
     def selectPrevRobType(self):
@@ -76,8 +77,18 @@ class CalibController:
 
         self.statusWindow.selectPrevRobType()
 
-        self.paramWindow.setHSV(self.colorParams[self.selectedRobType][0],self.colorParams[self.selectedRobType][1])
+        selectedRobType = self.statusWindow.getSelectedRobType()
+
+        self.paramWindow.setHSV(self.colorParams[selectedRobType][0],self.colorParams[selectedRobType][1])
 
     def toggleFreezeImg(self):
         self.streamWindow.toggleFreeze()
+
+    def connectBluetooth(self):
+
+        self.beaconPos.connectBluetooth()
+
+    def disconnectLAN(self):
+
+        self.beaconPos.disconnectLAN()
 

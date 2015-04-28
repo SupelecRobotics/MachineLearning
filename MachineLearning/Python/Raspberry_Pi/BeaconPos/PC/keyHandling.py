@@ -26,5 +26,9 @@ def handleKey(key, calibController):
             calibController.selectPrevRefPoint()
         elif(key == ord(' ')):
             calibController.toggleFreezeImg()
+        elif(key == ord('b')):
+            calibController.connectBluetooth()
+        elif(key == ord('x')):
+            calibController.disconnectLAN()
         return False
         

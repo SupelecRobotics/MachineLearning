@@ -8,8 +8,8 @@ class BeaconPos:
 
         self.connected = False
         
-        self.STREAM_PORT = 5005
-        self.PARAMS_PORT = 5004
+        self.STREAM_PORT = 5004
+        self.PARAMS_PORT = 5005
 
         self.TEST_colorParams = [ [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ]]
         self.TEST_points = [(0, 0), (34, 23), (23, 234), (123, 98)]
@@ -31,6 +31,7 @@ class BeaconPos:
     def disconnectLAN(self):
 
         if(self.connected):
+            self.send('x')
             self.streamSock.close()
             self.paramsSock.close()
             self.connected = False
@@ -66,11 +67,13 @@ class BeaconPos:
 
         self.send('o' + str(params))
 
-        self.TEST_colorParams = list(params) # Temporaire
+        #self.TEST_colorParams = list(params) # Temporaire
 
     def setPoints(self, points):
 
-        self.TEST_points = list(points) # Temporaire
+        self.send('p' + str(points))
+
+        #self.TEST_points = list(points) # Temporaire
 
     def setRefPoints(self, refPoints):
 
@@ -78,17 +81,37 @@ class BeaconPos:
 
     def getColorParams(self):
 
-        return list(self.TEST_colorParams) # Temporaire
+        if(self.isConnected):
+            self.send('l')
+            length = self.recvall(self.paramsSock,16)
+            stringData = self.recvall(self.paramsSock, int(length))
+
+        #return list(self.TEST_colorParams) # Temporaire
+            return eval(stringData)
 
     def getPoints(self):
 
-        return list(self.TEST_points) # Temporaire
+        if(self.isConnected):
+            self.send('m')
+            length = self.recvall(self.paramsSock,16)
+            stringData = self.recvall(self.paramsSock, int(length))
+            return eval(stringData)
+
+        #return list(self.TEST_points) # Temporaire
 
     def getRefPoints(self):
 
-        return list(self.TEST_refPoints) # Temporaire
+        if(self.isConnected):
+            self.send('r')
+            length = self.recvall(self.paramsSock,16)
+            stringData = self.recvall(self.paramsSock, int(length))
+            return eval(stringData)
+
+        #return list(self.TEST_refPoints) # Temporaire
 
     def connectBluetooth(self):
+
+        self.send('b')
 
         return True # Temporaire
 
