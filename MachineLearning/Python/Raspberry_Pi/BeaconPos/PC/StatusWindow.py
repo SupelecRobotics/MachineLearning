@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 
 NB_ROB_TYPES = 4
+TABLE_W = 2000
+TABLE_H = 3000
 
 class StatusWindow:
 
@@ -33,10 +35,12 @@ class StatusWindow:
 
         for i in range(0, len(self.refPoints)):
             point = self.refPoints[i]
+            x = point[0] * w / TABLE_W
+            y = point[1] * h / TABLE_H
             if(i == self.selectedRefPoint):
-                cv2.circle(frame,(point[0],point[1]+self.STATUS_ZONE_H),5,(255,255,255),2)
+                cv2.circle(frame,(x,y+self.STATUS_ZONE_H),5,(255,255,255),2)
             else:
-                cv2.circle(frame,(point[0],point[1]+self.STATUS_ZONE_H),5,(255,0,0),2)
+                cv2.circle(frame,(x,y+self.STATUS_ZONE_H),5,(255,0,0),2)
 
         
         cv2.imshow('Status',frame)

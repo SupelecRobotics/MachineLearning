@@ -29,16 +29,16 @@ def dumpInto(fileName, param):
 
 def loadFromFileAndSend(fileName, sock):
     with open(fileName,'r') as file:
-            depickler = pickle.Unpickler(file)
-            param = depickler.load()
-            outData = str(param)
-            sock.send( str(len(outData)).ljust(16))
-            sock.send( outData )
+        depickler = pickle.Unpickler(file)
+        param = depickler.load()
+        outData = str(param)
+        sock.send( str(len(outData)).ljust(16))
+        sock.send( outData )
 
 def processData(sock, inData):
 
     end = False
-    blueTSer = None
+    matchBegin = False
 
     c = inData[0]
 
@@ -52,12 +52,20 @@ def processData(sock, inData):
         dumpInto('PerspectivePoints.dat', perspPoints)
     elif(c == 'm'):
         loadFromFileAndSend('PerspectivePoints.dat', sock)
+    elif(c == 'i'):
+        ratioParams = eval(inData[1:])
+        dumpInto('Ratios.dat', ratioParams)
+    elif(c == 'k'):
+        loadFromFileAndSend('Ratios.dat', sock)
     elif(c == 'b'):
-        blueTSer = bluetoothInit()
+        bluetoothInit()
     elif(c == 'x'):
         end = True
+    elif(c == 'X'):
+        end = True
+        matchBegin = True
     elif(c == 'r'):
         loadFromFileAndSend('RefPoints.dat', sock)
 
-    return end,blueTSer
+    return end,matchBegin
         

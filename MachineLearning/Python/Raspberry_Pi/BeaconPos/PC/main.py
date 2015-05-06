@@ -27,5 +27,4 @@ while(not end):
 
     end = handleKey(cv2.waitKey(1) & 0xFF, calibController)
 
-beaconPos.disconnectLAN()
 cv2.destroyAllWindows()

@@ -1,6 +1,12 @@
 import numpy as np
 import cv2
 
+WMIN = 10
+HMIN = 10
+
+MH = 71
+MW = 80
+
 class StreamWindow:
 
     def mouseCallback(self,event,x,y,flags,param):
@@ -17,6 +23,8 @@ class StreamWindow:
         self.points = []
 
         self.frozen = False
+
+        self.cross = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
         
         cv2.namedWindow('Stream')
         cv2.setMouseCallback('Stream', self.mouseCallback, None)
@@ -45,9 +53,32 @@ class StreamWindow:
                 self.prevFrame = frame.copy()
                 
             colorParam = self.paramWindow.getHSV()
+            ratioTolMin, ratioTolMax = self.paramWindow.getRatioTol()
+
+            ratioMin = (float(ratioTolMin) / float(100)) * float(MW) / float(MH)
+            ratioMax = (float(ratioTolMax) / float(100)) * float(MW) / float(MH)
+            
             mask = cv2.inRange(frame, np.array(colorParam[0]), np.array(colorParam[1]))
 
             frame = cv2.bitwise_and(frame, frame, mask = mask)
+
+            # ---------------
+
+            mask = cv2.erode(mask, self.cross)
+            contours,_ = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+            validContours = []
+
+            for cnt in contours:
+                x,y,w,h = cv2.boundingRect(cnt)
+                ratio = float(w) / float(h)
+                if(w > WMIN and h > HMIN and ratio > ratioMin and ratio < ratioMax):
+                    validContours.append(cnt)
+
+            # ---------------
+
+            cv2.drawContours(frame, validContours, -1, (0, 255, 0),2)
+            
 
             selectedRefPoint = self.statusWindow.getSelectedRefPoint()
 

@@ -1,4 +1,5 @@
 import socket
+import serial
 import numpy as np
 import cv2
 import pickle
@@ -6,6 +7,8 @@ import thread
 from functions import *
 import RobotFinder
 import PerspectiveTransformer
+import StatProcesser
+from RaspiBluetooth import *
 
 TCP_PORT_STREAM = 5004
 TCP_PORT_PARAM = 5005
@@ -29,8 +32,11 @@ def stream(threadName, params):
             result, imgencode = cv2.imencode('.jpg', frame, encode_param)
             data = np.array(imgencode)
             stringData = data.tostring()
-            connStream.send( str(len(stringData)).ljust(16))
-            connStream.send( stringData )
+            try:
+                connStream.send( str(len(stringData)).ljust(16))
+                connStream.send( stringData )
+            except:
+                pass
 
     print 'Releasing stream objects'
     connStream.close()
@@ -49,41 +55,58 @@ connParam = waitForConnection(TCP_PORT_PARAM)
 print 'Params connection accepted'
 
 end = False
+matchBegin = False
+
+blueTSer = None
 
 try:
     while(not end):        
         length = recvall(connParam,16)
         if(length != 0):
             inData = recvall(connParam, int(length))
-            end,blueTSer = processData(connParam, inData)
+            end,matchBegin = processData(connParam, inData)
             
 except (KeyboardInterrupt, SystemExit):
     end = True
 
-param[0] = True
+params[0] = True
 connParam.close()
 
-while(not param[1]):
+while(not params[1]):
     pass
 
+if(matchBegin):
+    print 'Beginning match !'
+    
+    blueTSer = serial.Serial( "/dev/ttyAMA0", baudrate=38400,timeout = 5 )
 
-print 'Beginning match !'
+    robFinder = []
 
-for i in range(0,NB_ROBOTS):
-    robFinder[i] = RobotFinder.RobotFinder(i)
+    for i in range(0,NB_ROBOTS):
+        robFinder.append(RobotFinder.RobotFinder(i))
+
+    perspTrans = PerspectiveTransformer.PerspectiveTransformer()
+    statProc = StatProcesser.StatProcesser()
 
 
-end = False
+    end = False
+    lastMsg = ''
 
-try:
-    while(cap.isOpened() and not end):
-        ret,frame = cap.read()
-        if(ret):
-            # TODO !
-        
+    try:
+        while(cap.isOpened() and not end):
+            ret,frame = cap.read()
+            statProc.update()
+            if(ret):
+                coords = robFinder[2].process(frame)
+                tableCoords = perspTrans.transform(coords)
+                statProc.addPoints(tableCoords)
+                lastMsg = sendCoordsOfRobot(blueTSer, 2, statProc.getMostLikely(), lastMsg)
+                
             
-except (KeyboardInterrupt, SystemExit):
-    end = True
+                
+    except (KeyboardInterrupt, SystemExit):
+        end = True
+        print 'User interrupt'
 
 cap.release()
 

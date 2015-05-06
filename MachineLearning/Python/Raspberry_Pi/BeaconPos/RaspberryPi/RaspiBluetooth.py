@@ -14,12 +14,14 @@ def convertNbTo4Char(nb):
 
     return strNb
 
-def sendCoordsOfRobot(blueTSer, robType, coords):
-    if(coords is not None):
-         for i in range(0, len(coords)):
-            msg = objectType + str(i) + convertNbTo4Char(coords[i][0]) + convertNbTo4Char(coords[i][1]) + "\r\n"
-            print msg
-            blueTSer.write(msg)
+def sendCoordsOfRobot(blueTSer, robType, coord, lastMsg):
+    if(coord is not None):
+        msg = '#' + str(robType) + convertNbTo4Char(coord[0]) + convertNbTo4Char(coord[1]) +'\r\n'
+        if(msg != lastMsg):
+            print msg + ' ' + str(time.time())
+            print blueTSer.write(msg)
+            lastMsg = msg
+    return lastMsg
 
 def sendCommand(btSer,msg):
     btSer.write(msg)
@@ -38,25 +40,26 @@ def bluetoothInit():
      
      
     GPIO.output(pinEN, True)
-     
-    print "Configuration"
-    print sendCommand(blueTSer, "AT+RESET\r\n")
-    print "RESET sent"
+
+    print sendCommand(blueTSer, "AT\r\n")
+    
     print sendCommand(blueTSer, "AT+ORGL\r\n")
     print "ORGL sent"
     print sendCommand(blueTSer, "AT+RMAAD\r\n")
     print "RMAAD sent"
     print sendCommand(blueTSer, "AT+NAME=sumocam2\r\n")
     print "NAME sent"
+    print sendCommand(blueTSer, "AT+PSWD=6666\r\n")
+    print "PSWD sent"
     print sendCommand(blueTSer, "AT+INIT\r\n")
     print "INIT sent"
-    print sendCommand(blueTSer, "AT+INQ\r\n")
-    print "INQ sent"
+    print sendCommand(blueTSer, "AT+ROLE=0\r\n")
+    print "ROLE sent"
+    #print sendCommand(blueTSer, "AT+INQ\r\n")
+    #print "INQ sent"
+
+    print sendCommand(blueTSer, 'AT+STATE?\r\n')
 
     GPIO.output(pinEN, False)
-
-    ans = sendCommand(blueTSer, 'AT+STATE?\r\n')
-
-    print ans
 
     return blueTSer

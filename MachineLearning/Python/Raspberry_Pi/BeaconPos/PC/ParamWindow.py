@@ -14,9 +14,15 @@ class ParamWindow:
         cv2.createTrackbar('Vmin', 'Params', 0, 255, self.nothing)
         cv2.createTrackbar('Vmax', 'Params', 0, 255, self.nothing)
 
+        cv2.createTrackbar('Rmin', 'Params', 0, 100, self.nothing)
+        cv2.createTrackbar('Rmax', 'Params', 100, 200, self.nothing)
+
         cv2.setTrackbarPos('Hmax', 'Params', 179)
         cv2.setTrackbarPos('Smax', 'Params', 255)
         cv2.setTrackbarPos('Vmax', 'Params', 255)
+
+        cv2.setTrackbarPos('Rmin', 'Params', 0)
+        cv2.setTrackbarPos('Rmax', 'Params', 200)
 
     def nothing(self, x):
         pass
@@ -42,3 +48,15 @@ class ParamWindow:
         cv2.setTrackbarPos('Hmax', 'Params', highHSV[0])
         cv2.setTrackbarPos('Smax', 'Params', highHSV[1])
         cv2.setTrackbarPos('Vmax', 'Params', highHSV[2])
+
+    def getRatioTol(self):
+
+        tolMin = cv2.getTrackbarPos('Rmin', 'Params')
+        tolMax = cv2.getTrackbarPos('Rmax', 'Params')
+
+        return tolMin,tolMax
+
+    def setRatioTol(self, tolMin, tolMax):
+
+        cv2.setTrackbarPos('Rmin', 'Params', tolMin)
+        cv2.setTrackbarPos('Rmax', 'Params', tolMax)
