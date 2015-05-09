@@ -1,7 +1,8 @@
+import os
 import time
 
-MAX_DIST = 10
-TIME_KEEP = 3
+MAX_DIST = 40
+TIME_KEEP = 2
 
 
 def distance2(pos1, pos2):
@@ -13,6 +14,21 @@ class StatProcesser:
         self.points = {}
         self.lastTime = time.time()
 
+    def printPointDistribution(self):
+
+        os.system('clear')
+        for p in self.points :
+
+            msg = str((int(p[0]),int(p[1]))) + ' |'
+            for i in range(0,self.points[p][0]):
+                msg += '#'
+                
+            print msg
+
+        p = self.getMostLikely()
+        if(p is not None):
+            print '\n' + str((int(p[0]),int(p[1])))
+
     def getMostUnlikely(self):
 
         pMin = None
@@ -20,9 +36,9 @@ class StatProcesser:
 
         for p in self.points:
 
-            if(self.points[p] < minNbPoints):
+            if(self.points[p][0] < minNbPoints):
                 pMin = p
-                minNbPoints = self.points[p]
+                minNbPoints = self.points[p][0]
 
         return pMin
 
@@ -34,17 +50,34 @@ class StatProcesser:
         for p in self.points:
 
             if (distance2(p, point) < MAX_DIST):
-                self.points[p] += 1
+                self.points[p][0] += 1
+                self.points[p][1] = time.time()
                 put = True
                 break
 
         if(not put):
-            self.points[point] = 1
+            self.points[point] = [1,time.time()]
+
+    def getLessRecent(self):
+
+        pOld = None
+        t = float('inf')
+
+        for p in self.points:
+
+            if(self.points[p][1] < t):
+                pOld = p
+                t = self.points[p][1]
+
+        return pOld
 
     def update(self):
 
         if(time.time() - self.lastTime > TIME_KEEP):
             self.points = {}
+##            pOld = self.getLessRecent()
+##            if(pOld is not None):
+##                del self.points[pOld]
             self.lastTime = time.time()
 
     def addPoints(self, points):
@@ -65,9 +98,9 @@ class StatProcesser:
 
         for p in self.points:
 
-            if(self.points[p] > maxNbPoints):
+            if(self.points[p][0] > maxNbPoints):
                 pMax = p
-                maxNbPoints = self.points[p]
+                maxNbPoints = self.points[p][0]
 
         return pMax
 

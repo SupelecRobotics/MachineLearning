@@ -35,7 +35,7 @@ def loadFromFileAndSend(fileName, sock):
         sock.send( str(len(outData)).ljust(16))
         sock.send( outData )
 
-def processData(sock, inData):
+def processData(sock, inData, color):
 
     end = False
     matchBegin = False
@@ -65,7 +65,9 @@ def processData(sock, inData):
         end = True
         matchBegin = True
     elif(c == 'r'):
-        loadFromFileAndSend('RefPoints.dat', sock)
+        loadFromFileAndSend('RefPoints_'+ color + '.dat', sock)
+    elif(c == 'g' or c == 'y'):
+        color = c
 
-    return end,matchBegin
+    return end,matchBegin,color
         

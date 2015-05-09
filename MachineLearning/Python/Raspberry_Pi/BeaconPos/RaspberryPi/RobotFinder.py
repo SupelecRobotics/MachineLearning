@@ -2,10 +2,13 @@
 import numpy as np
 import cv2
 
-H0 = 350
+##H0 = 350
+##H2 = 430
+
+H0 = 364
 H2 = 430
 
-MH = 71
+MH = 73
 MW = 80
 
 WMIN = 20

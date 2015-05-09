@@ -60,3 +60,4 @@ class ParamWindow:
 
         cv2.setTrackbarPos('Rmin', 'Params', tolMin)
         cv2.setTrackbarPos('Rmax', 'Params', tolMax)
+

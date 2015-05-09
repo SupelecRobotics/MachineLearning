@@ -13,8 +13,10 @@ class StatusWindow:
         self.selectedRobType = 0
         self.selectedRefPoint = 0
         self.refPoints = []
+        self.color = 'y'
 
         self.STATUS_ZONE_H = 50
+        self.COLOR_ZONE_W = 50
         self.tablePic = cv2.imread('schema_table2.png')
         cv2.namedWindow('Status')
 
@@ -23,6 +25,17 @@ class StatusWindow:
         h,w = self.tablePic.shape[:2]
         
         frame = np.zeros((h + self.STATUS_ZONE_H, w, 3), np.uint8)
+
+        if(self.color == 'g'):
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,0].fill(0)
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,1].fill(255)
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,2].fill(0)
+            
+        else:
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,0].fill(0)
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,1].fill(255)
+            frame[:self.STATUS_ZONE_H,-self.COLOR_ZONE_W:,2].fill(255)
+        
 
         if(self.beaconPos.isConnected()):
             cv2.putText(frame, 'LAN connected', (0,20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -88,3 +101,10 @@ class StatusWindow:
     def getSelectedRefPoint(self):
 
         return self.selectedRefPoint
+
+    def toggleStartColor(self):
+
+        if(self.color == 'g'):
+            self.color = 'y'
+        else:
+            self.color = 'g'

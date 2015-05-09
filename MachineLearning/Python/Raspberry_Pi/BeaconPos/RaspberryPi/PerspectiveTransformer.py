@@ -6,7 +6,7 @@ MR = 40
 
 class PerspectiveTransformer:
 
-    def __init__(self):
+    def __init__(self,color):
 
         #self.TABLE_W = 2000
         #self.TABLE_H = 3000
@@ -14,7 +14,7 @@ class PerspectiveTransformer:
         self.TABLE_W = 3000
         self.TABLE_H = 4000
         
-        with open('RefPoints.dat','r') as file:
+        with open('RefPoints_' + color + '.dat','r') as file:
             depickler = pickle.Unpickler(file)
             refPoints = depickler.load()
 
@@ -22,6 +22,16 @@ class PerspectiveTransformer:
             depickler = pickle.Unpickler(file)
             points = depickler.load()
 
+        for i in range(0, len(refPoints)):
+
+            if(i >= len(points)):
+                del refPoints[i]
+            elif(points[i] is None):
+                del points[i]
+                del refPoints[i]
+
+        if(len(refPoints) < 4):
+            raise Exception('Not enough ref points !')
         self.M = cv2.findHomography(np.float32(points), np.float32(refPoints), cv2.RANSAC, 5.0)[0]
 
     def transform(self, srcPoints):

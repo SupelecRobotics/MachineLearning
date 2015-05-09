@@ -58,13 +58,14 @@ end = False
 matchBegin = False
 
 blueTSer = None
+color = 'y'
 
 try:
     while(not end):        
         length = recvall(connParam,16)
         if(length != 0):
             inData = recvall(connParam, int(length))
-            end,matchBegin = processData(connParam, inData)
+            end,matchBegin,color = processData(connParam, inData,color)
             
 except (KeyboardInterrupt, SystemExit):
     end = True
@@ -86,7 +87,7 @@ if(matchBegin):
         robFinder.append(RobotFinder.RobotFinder(i))
 
     perspTrans = PerspectiveTransformer.PerspectiveTransformer()
-    statProc = StatProcesser.StatProcesser()
+    statProc = StatProcesser.StatProcesser(color)
 
 
     end = False
@@ -97,10 +98,11 @@ if(matchBegin):
             ret,frame = cap.read()
             statProc.update()
             if(ret):
-                coords = robFinder[2].process(frame)
+                coords = robFinder[0].process(frame)
                 tableCoords = perspTrans.transform(coords)
                 statProc.addPoints(tableCoords)
-                lastMsg = sendCoordsOfRobot(blueTSer, 2, statProc.getMostLikely(), lastMsg)
+                statProc.printPointDistribution()
+                lastMsg = sendCoordsOfRobot(blueTSer, 0, statProc.getMostLikely(), lastMsg)
                 
             
                 

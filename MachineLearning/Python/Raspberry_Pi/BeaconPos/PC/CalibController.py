@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 import cv2
 
@@ -105,6 +106,9 @@ class CalibController:
     def toggleFreezeImg(self):
         self.streamWindow.toggleFreeze()
 
+    def toggleColorSelect(self):
+        self.streamWindow.toggleColorSelect()
+
     def connectBluetooth(self):
 
         self.beaconPos.connectBluetooth()
@@ -113,3 +117,43 @@ class CalibController:
 
         self.beaconPos.disconnectLAN(mode)
 
+    def toggleStartColor(self):
+        self.statusWindow.toggleStartColor()
+        self.streamWindow.clearPoints()
+        self.statusWindow.setRefPoints(self.beaconPos.getRefPoints())
+
+    def saveCurrentColorParams(self):
+
+        self.colorParams[self.statusWindow.getSelectedRobType()] = self.paramWindow.getHSV()
+
+        with open('ColorParams.dat','w') as file:
+            pickler = pickle.Pickler(file)
+            pickler.dump(self.colorParams)
+
+    def loadColorParamsFromFile(self):
+
+        with open('ColorParams.dat','r') as file:
+            unPickler = pickle.Unpickler(file)
+            self.colorParams = unPickler.load()
+
+        selectedRobType = self.statusWindow.getSelectedRobType()
+        self.paramWindow.setHSV(self.colorParams[selectedRobType][0],self.colorParams[selectedRobType][1])
+
+    def saveCurrentRatioParams(self):
+
+        self.ratioParams[self.statusWindow.getSelectedRobType()] = self.paramWindow.getRatioTol()
+
+        with open('RatioParams.dat','w') as file:
+            pickler = pickle.Pickler(file)
+            pickler.dump(self.ratioParams)
+
+    def loadRatioParamsFromFile(self):
+
+        with open('RatioParams.dat','r') as file:
+            unPickler = pickle.Unpickler(file)
+            self.ratioParams = unPickler.load()
+
+        selectedRobType = self.statusWindow.getSelectedRobType()
+        self.paramWindow.setRatioTol(self.ratioParams[selectedRobType][0],self.ratioParams[selectedRobType][1])
+
+        

@@ -18,8 +18,8 @@ def sendCoordsOfRobot(blueTSer, robType, coord, lastMsg):
     if(coord is not None):
         msg = '#' + str(robType) + convertNbTo4Char(coord[0]) + convertNbTo4Char(coord[1]) +'\r\n'
         if(msg != lastMsg):
-            print msg + ' ' + str(time.time())
-            print blueTSer.write(msg)
+            #print msg + ' ' + str(time.time())
+            #print blueTSer.write(msg)
             lastMsg = msg
     return lastMsg
 
@@ -49,7 +49,7 @@ def bluetoothInit():
     print "RMAAD sent"
     print sendCommand(blueTSer, "AT+NAME=sumocam2\r\n")
     print "NAME sent"
-    print sendCommand(blueTSer, "AT+PSWD=6666\r\n")
+    print sendCommand(blueTSer, "AT+PSWD=6789\r\n")
     print "PSWD sent"
     print sendCommand(blueTSer, "AT+INIT\r\n")
     print "INIT sent"

@@ -12,6 +12,8 @@ def handleKey(key, calibController):
         elif(key == ord('o')):
             calibController.sendColorParams()
             calibController.sendRatioParams()
+            calibController.saveCurrentColorParams()
+            calibController.saveCurrentRatioParams()
         elif(key == ord('p')):
             calibController.sendPerspectiveParams()
         elif(key == ord('l')):
@@ -19,6 +21,9 @@ def handleKey(key, calibController):
             calibController.loadRatioParams()
         elif(key == ord('m')):
             calibController.loadPerspectiveParams()
+        elif(key == ord('i')):
+            calibController.loadColorParamsFromFile()
+            calibController.loadRatioParamsFromFile()
         elif(key == ord('z')):
             calibController.selectNextRobType()
         elif(key == ord('s')):
@@ -29,8 +34,12 @@ def handleKey(key, calibController):
             calibController.selectPrevRefPoint()
         elif(key == ord(' ')):
             calibController.toggleFreezeImg()
+        elif(key == ord('a')):
+            calibController.toggleColorSelect()
         elif(key == ord('b')):
             calibController.connectBluetooth()
+        elif(key == ord('y')):
+             calibController.toggleStartColor()
         elif(key == ord('x')):
             calibController.disconnectLAN(1)
         return False

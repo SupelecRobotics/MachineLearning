@@ -11,10 +11,6 @@ class BeaconPos:
         self.STREAM_PORT = 5004
         self.PARAMS_PORT = 5005
 
-        #self.TEST_colorParams = [ [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ], [ (0,0,0),(179,255,255) ]]
-        #self.TEST_points = [(0, 0), (34, 23), (23, 234), (123, 98)]
-        #self.TEST_refPoints = [(0, 0), (45, 65), (12, 17), (5, 35)]
-
     def connectLAN(self, adress):
         
         self.streamSock = socket.socket()
@@ -70,8 +66,6 @@ class BeaconPos:
 
         self.send('o' + str(params))
 
-        #self.TEST_colorParams = list(params) # Temporaire
-
     def setRatioParams(self, params):
 
         self.send('i' + str(params))
@@ -79,8 +73,6 @@ class BeaconPos:
     def setPoints(self, points):
 
         self.send('p' + str(points))
-
-        #self.TEST_points = list(points) # Temporaire
 
     def setRefPoints(self, refPoints):
 
@@ -93,7 +85,6 @@ class BeaconPos:
             length = self.recvall(self.paramsSock,16)
             stringData = self.recvall(self.paramsSock, int(length))
 
-        #return list(self.TEST_colorParams) # Temporaire
             return eval(stringData)
 
     def getPoints(self):
@@ -104,8 +95,6 @@ class BeaconPos:
             stringData = self.recvall(self.paramsSock, int(length))
             return eval(stringData)
 
-        #return list(self.TEST_points) # Temporaire
-
     def getRefPoints(self):
 
         if(self.isConnected):
@@ -113,8 +102,6 @@ class BeaconPos:
             length = self.recvall(self.paramsSock,16)
             stringData = self.recvall(self.paramsSock, int(length))
             return eval(stringData)
-
-        #return list(self.TEST_refPoints) # Temporaire
 
     def getRatioParams(self):
 
@@ -130,10 +117,6 @@ class BeaconPos:
         self.send('b')
 
         return True # Temporaire
-
-    def beginMatch(self):
-        
-        pass # Temporaire
 
     
         
