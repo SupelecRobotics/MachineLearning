@@ -2,7 +2,7 @@ import os
 import time
 
 MAX_DIST = 40
-TIME_KEEP = 2
+TIME_KEEP = 1
 
 
 def distance2(pos1, pos2):
@@ -13,6 +13,7 @@ class StatProcesser:
     def __init__(self):
         self.points = {}
         self.lastTime = time.time()
+        self.lastPoint = (0,0)
 
     def printPointDistribution(self):
 
@@ -74,6 +75,7 @@ class StatProcesser:
     def update(self):
 
         if(time.time() - self.lastTime > TIME_KEEP):
+            self.lastPoint = self.getMostLikely()
             self.points = {}
 ##            pOld = self.getLessRecent()
 ##            if(pOld is not None):
@@ -103,6 +105,10 @@ class StatProcesser:
                 maxNbPoints = self.points[p][0]
 
         return pMax
+
+    def getCurrentPoint(self):
+
+        return self.lastPoint
 
         
             

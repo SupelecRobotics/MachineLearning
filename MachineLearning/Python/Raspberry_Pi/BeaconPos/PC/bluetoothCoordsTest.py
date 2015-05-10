@@ -26,54 +26,34 @@ def getPoints(msg):
         return x,y
     else:
         return []
-
-def coordsRec(threadName, params):
-
-    ser = params[0]
-    msg = params[1]
-    end = params[2]
-
-    while(not end[0]):
-        print ser[0].inWaiting()
-        if(ser[0].inWaiting() == 0):
-            msg[0] = ser[0].readline()
-
-    params[3][0] = True
     
 
 print 'Launching'
 
-ser = [serial.Serial(port=9,baudrate=38400,timeout = 1 )]
+ser = serial.Serial(port=9,baudrate=38400,timeout = 5 )
 
-print ser[0].isOpen()
+print ser.isOpen()
 
 table = cv2.imread('schema_table2.png')
 
-end = [False]
+end = False
 point = (0,0)
-msg = ['']
-threadEnd = [False]
+msg = ''
 
-params = (ser,msg,end,threadEnd)
-
-#thread.start_new_thread(coordsRec, ('Rec', params))
 
 cv2.namedWindow('Table')
 
-while(not end[0]):
-    print ser[0].inWaiting()
-    if(ser[0].inWaiting() == 0):
-        msg[0] = ser[0].readline()
-    if(params[1][0] != ''):
+while(not end):
+    if(ser.inWaiting() > 0):
+        msg = ser.readline()
+    if(msg != ''):
         point = getPoints(msg)
     tableWithCircles = drawCirclesAndText(table, point)
     cv2.imshow('Table', tableWithCircles)
 
-    key = cv2.waitKey(10) & 0xFF
+    key = cv2.waitKey(1) & 0xFF
     if(key == ord('q')):
-        end[0] = True
+        end = True
 
 cv2.destroyAllWindows()
-while(not threadEnd[0]):
-    pass
-ser[0].close()
+ser.close()

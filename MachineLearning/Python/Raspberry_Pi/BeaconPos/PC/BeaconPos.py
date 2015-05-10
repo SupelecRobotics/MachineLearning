@@ -19,7 +19,6 @@ class BeaconPos:
         self.paramsSock = socket.socket()
         self.paramsSock.connect((adress, self.PARAMS_PORT))
 
-        #if(err1 == 0 and err2 == 0):
         self.connected = True
 
         print 'Connection OK'
@@ -76,7 +75,7 @@ class BeaconPos:
 
     def setRefPoints(self, refPoints):
 
-        self.TEST_refPoints = list(refPoints) # Temporaire
+        pass
 
     def getColorParams(self):
 
@@ -115,8 +114,6 @@ class BeaconPos:
     def connectBluetooth(self):
 
         self.send('b')
-
-        return True # Temporaire
 
     
         

@@ -8,11 +8,8 @@ class PerspectiveTransformer:
 
     def __init__(self,color):
 
-        #self.TABLE_W = 2000
-        #self.TABLE_H = 3000
-
-        self.TABLE_W = 3000
-        self.TABLE_H = 4000
+        self.TABLE_W = 2000
+        self.TABLE_H = 3000
         
         with open('RefPoints_' + color + '.dat','r') as file:
             depickler = pickle.Unpickler(file)

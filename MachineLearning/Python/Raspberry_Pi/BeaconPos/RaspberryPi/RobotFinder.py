@@ -31,7 +31,7 @@ class RobotFinder:
         self.wMin = WMIN #Temporaire
         self.hMin = HMIN #Temporaire
         
-        self.cross = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
+        self.cross = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
 
 
         # Remettre si nécessaire

@@ -86,8 +86,8 @@ if(matchBegin):
     for i in range(0,NB_ROBOTS):
         robFinder.append(RobotFinder.RobotFinder(i))
 
-    perspTrans = PerspectiveTransformer.PerspectiveTransformer()
-    statProc = StatProcesser.StatProcesser(color)
+    perspTrans = PerspectiveTransformer.PerspectiveTransformer(color)
+    statProc = StatProcesser.StatProcesser()
 
 
     end = False
@@ -102,7 +102,7 @@ if(matchBegin):
                 tableCoords = perspTrans.transform(coords)
                 statProc.addPoints(tableCoords)
                 statProc.printPointDistribution()
-                lastMsg = sendCoordsOfRobot(blueTSer, 0, statProc.getMostLikely(), lastMsg)
+                lastMsg = sendCoordsOfRobot(blueTSer, 0, statProc.getCurrentPoint(), lastMsg)
                 
             
                 
