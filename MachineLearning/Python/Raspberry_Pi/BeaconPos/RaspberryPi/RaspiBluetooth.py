@@ -14,15 +14,24 @@ def convertNbTo4Char(nb):
 
     return strNb
 
-def sendCoordsOfRobot(blueTSer, robType, coord, lastMsg):
+def sendCoordsOfRobot(blueTSer, robType, coord, lastMsg, lostTracking):
     if(coord is not None):
+        if(lostTracking):
+            lostTracking = False
+            
         msg = '#' + str(robType) + convertNbTo4Char(coord[0]) + convertNbTo4Char(coord[1]) +'\r\n'
-        if(True):
-        #if(msg != lastMsg):
-            #print msg + ' ' + str(time.time())
+
+        if(msg != lastMsg):
             blueTSer.write(msg)
             lastMsg = msg
-    return lastMsg
+    else:
+        if(not lostTracking):
+            lostTracking = True
+            msg = '#' + str(robType) + 'xxxxxxxx' +'\r\n'
+            blueTSer.write(msg)
+            lastMsg = msg
+        
+    return lastMsg,lostTracking
 
 def sendCommand(btSer,msg):
     btSer.write(msg)

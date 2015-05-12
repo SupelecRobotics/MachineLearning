@@ -30,10 +30,12 @@ class PerspectiveTransformer:
         if(len(refPoints) < 4):
             raise Exception('Not enough ref points !')
         self.M = cv2.findHomography(np.float32(points), np.float32(refPoints), cv2.RANSAC, 5.0)[0]
+             
 
     def transform(self, srcPoints):
         if(srcPoints.size > 0):
             tab = cv2.perspectiveTransform(srcPoints.reshape(-1,1,2),self.M)[0].tolist()
+            print tab
             for i in range(0,len(tab)):
                 tab[i][1] -= MR
                 if(tab[i][0] < 0 or tab[i][0] >= self.TABLE_W or tab[i][1] < 0 or tab[i][1] >= self.TABLE_H):

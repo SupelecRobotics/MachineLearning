@@ -92,6 +92,7 @@ if(matchBegin):
 
     end = False
     lastMsg = ''
+    lostTracking = True
 
     try:
         while(cap.isOpened() and not end):
@@ -102,7 +103,7 @@ if(matchBegin):
                 tableCoords = perspTrans.transform(coords)
                 statProc.addPoints(tableCoords)
                 statProc.printPointDistribution()
-                lastMsg = sendCoordsOfRobot(blueTSer, 0, statProc.getCurrentPoint(), lastMsg)
+                lastMsg,lostTracking = sendCoordsOfRobot(blueTSer, 0, statProc.getCurrentPoint(), lastMsg, lostTracking)
                 
             
                 
