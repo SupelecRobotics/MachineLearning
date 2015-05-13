@@ -68,6 +68,6 @@ def processData(sock, inData, color):
         loadFromFileAndSend('RefPoints_'+ color + '.dat', sock)
     elif(c == 'g' or c == 'y'):
         color = c
-
+        
     return end,matchBegin,color
         

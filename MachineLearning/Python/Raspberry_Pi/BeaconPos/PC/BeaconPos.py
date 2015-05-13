@@ -12,16 +12,18 @@ class BeaconPos:
         self.PARAMS_PORT = 5005
 
     def connectLAN(self, adress):
-        
-        self.streamSock = socket.socket()
-        self.streamSock.connect((adress, self.STREAM_PORT))
 
-        self.paramsSock = socket.socket()
-        self.paramsSock.connect((adress, self.PARAMS_PORT))
 
-        self.connected = True
-
-        print 'Connection OK'
+        try:
+            self.paramsSock = socket.socket()
+            self.paramsSock.connect((adress, self.PARAMS_PORT))
+            
+            self.streamSock = socket.socket()
+            self.streamSock.connect((adress, self.STREAM_PORT))
+            self.connected = True
+            print 'Connection OK'
+        except:
+            pass
 
     def disconnectLAN(self, mode):
 
@@ -115,5 +117,8 @@ class BeaconPos:
 
         self.send('b')
 
-    
+    def setStartColor(self,c):
+
+        if(self.isConnected and (c =='y' or c == 'g')):
+            self.send(c)
         

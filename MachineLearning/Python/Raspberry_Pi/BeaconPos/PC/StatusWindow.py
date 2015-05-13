@@ -108,3 +108,7 @@ class StatusWindow:
             self.color = 'y'
         else:
             self.color = 'g'
+
+    def getStartColor(self):
+
+        return self.color
