@@ -14,16 +14,13 @@ class BeaconPos:
     def connectLAN(self, adress):
 
 
-        try:
-            self.paramsSock = socket.socket()
-            self.paramsSock.connect((adress, self.PARAMS_PORT))
-            
-            self.streamSock = socket.socket()
-            self.streamSock.connect((adress, self.STREAM_PORT))
-            self.connected = True
-            print 'Connection OK'
-        except:
-            pass
+        self.paramsSock = socket.socket()
+        self.paramsSock.connect((adress, self.PARAMS_PORT))
+        
+        self.streamSock = socket.socket()
+        self.streamSock.connect((adress, self.STREAM_PORT))
+        self.connected = True
+        print 'Connection OK'
 
     def disconnectLAN(self, mode):
 

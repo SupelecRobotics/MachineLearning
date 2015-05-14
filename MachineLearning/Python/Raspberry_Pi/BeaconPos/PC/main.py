@@ -6,7 +6,9 @@ import StatusWindow
 import CalibController
 import BeaconPos
 from keyHandling import handleKey
+import time
 
+print "Start"
 
 streamWindow = StreamWindow.StreamWindow()
 paramWindow = ParamWindow.ParamWindow()

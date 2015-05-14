@@ -48,10 +48,12 @@ cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 800)
 cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 600)
 
 params = [False, False, cap]
+
 print 'Waiting for params connection'
 connParam = waitForConnection(TCP_PORT_PARAM)
 
 print 'Params connection accepted'
+
 thread.start_new_thread(stream, ('Stream', params))
 
 end = False
