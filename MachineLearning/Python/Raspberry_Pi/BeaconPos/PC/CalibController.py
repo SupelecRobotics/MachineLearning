@@ -120,8 +120,8 @@ class CalibController:
     def toggleStartColor(self):
         self.statusWindow.toggleStartColor()
         self.streamWindow.clearPoints()
-        self.statusWindow.setRefPoints(self.beaconPos.getRefPoints())
         self.beaconPos.setStartColor(self.statusWindow.getStartColor())
+        self.statusWindow.setRefPoints(self.beaconPos.getRefPoints())
 
     def saveCurrentColorParams(self):
 

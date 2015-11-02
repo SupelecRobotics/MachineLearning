@@ -1,4 +1,8 @@
+import sys
 import socket
+import time
+import signal
+import RPi.GPIO as GPIO
 import serial
 import numpy as np
 import cv2
@@ -14,6 +18,38 @@ TCP_PORT_STREAM = 5004
 TCP_PORT_PARAM = 5005
 
 NB_ROBOTS = 4
+
+BLINK_TIME_WAITING_CONNECT = 0.1
+BLINK_TIME_RUNNING = 0.5
+
+pinLED = 11
+
+def quitCallback(signal,frame):
+    logFile.write('Exiting cleanly\n')
+    logFile.close()
+    ledParams[0] = 3
+    sys.exit(0)
+    
+
+
+def ledControl(threadName, ledStatus):
+
+    while(True):
+        if(ledStatus[0] == 0):
+            GPIO.output(pinLED, True)
+            time.sleep(BLINK_TIME_WAITING_CONNECT)
+            GPIO.output(pinLED, False)
+            time.sleep(BLINK_TIME_WAITING_CONNECT)
+        elif(ledStatus[0] == 1):
+            GPIO.output(pinLED, True)
+        elif(ledStatus[0] == 2):
+            GPIO.output(pinLED, True)
+            time.sleep(BLINK_TIME_RUNNING)
+            GPIO.output(pinLED, False)
+            time.sleep(BLINK_TIME_RUNNING)
+        else:
+            GPIO.output(pinLED, False)
+        
 
 def stream(threadName, params):
 
@@ -42,12 +78,20 @@ def stream(threadName, params):
     connStream.close()
     params[1] = True
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(pinLED, GPIO.OUT)
+
+ledParams = [3]
+thread.start_new_thread(ledControl, ('LED Control', ledParams))
+
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 800)
 cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 600)
 
 params = [False, False, cap]
+
+ledParams[0] = 0
 
 print 'Waiting for params connection'
 connParam = waitForConnection(TCP_PORT_PARAM)
@@ -61,6 +105,8 @@ matchBegin = False
 
 blueTSer = None
 color = 'y'
+
+ledParams[0] = 1
 
 try:
     while(not end):        
@@ -92,26 +138,27 @@ if(matchBegin):
     statProc = StatProcesser.StatProcesser()
 
 
-    end = False
     lastMsg = ''
     lostTracking = True
 
-    try:
-        while(cap.isOpened() and not end):
-            ret,frame = cap.read()
-            statProc.update()
-            if(ret):
-                coords = robFinder[0].process(frame)
-                tableCoords = perspTrans.transform(coords)
-                statProc.addPoints(tableCoords)
-                statProc.printPointDistribution()
-                lastMsg,lostTracking = sendCoordsOfRobot(blueTSer, 0, statProc.getCurrentPoint(), lastMsg, lostTracking)
+    logFile = open('camLog.txt','w')
+
+    ledParams[0] = 2
+
+    signal.signal(signal.SIGTERM, quitCallback)
+    signal.signal(signal.SIGINT, quitCallback)
+
+    while(cap.isOpened()):
+        ret,frame = cap.read()
+        statProc.update()
+        if(ret):
+            coords = robFinder[0].process(frame)
+            tableCoords = perspTrans.transform(coords)
+            statProc.addPoints(tableCoords)
+            statProc.printPointDistribution()
+            logFile.write(str(statProc.getCurrentPoint()) + '\n')
+            lastMsg,lostTracking = sendCoordsOfRobot(blueTSer, 0, statProc.getCurrentPoint(), lastMsg, lostTracking)
                 
-            
-                
-    except (KeyboardInterrupt, SystemExit):
-        end = True
-        print 'User interrupt'
 
 cap.release()
 

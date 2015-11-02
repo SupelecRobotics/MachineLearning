@@ -7,19 +7,19 @@ class ParamWindow:
     def __init__(self):
         
         cv2.namedWindow('Params', cv2.WINDOW_NORMAL)
-        cv2.createTrackbar('Hmin', 'Params', 0, 179, self.nothing)
-        cv2.createTrackbar('Hmax', 'Params', 0, 179, self.nothing)
-        cv2.createTrackbar('Smin', 'Params', 0, 255, self.nothing)
-        cv2.createTrackbar('Smax', 'Params', 0, 255, self.nothing)
-        cv2.createTrackbar('Vmin', 'Params', 0, 255, self.nothing)
-        cv2.createTrackbar('Vmax', 'Params', 0, 255, self.nothing)
+        cv2.createTrackbar('Hmin', 'Params', 0, 180, self.nothing)
+        cv2.createTrackbar('Hmax', 'Params', 0, 180, self.nothing)
+        cv2.createTrackbar('Smin', 'Params', 0, 256, self.nothing)
+        cv2.createTrackbar('Smax', 'Params', 0, 256, self.nothing)
+        cv2.createTrackbar('Vmin', 'Params', 0, 256, self.nothing)
+        cv2.createTrackbar('Vmax', 'Params', 0, 256, self.nothing)
 
         cv2.createTrackbar('Rmin', 'Params', 0, 100, self.nothing)
         cv2.createTrackbar('Rmax', 'Params', 100, 200, self.nothing)
 
-        cv2.setTrackbarPos('Hmax', 'Params', 179)
-        cv2.setTrackbarPos('Smax', 'Params', 255)
-        cv2.setTrackbarPos('Vmax', 'Params', 255)
+        cv2.setTrackbarPos('Hmax', 'Params', 180)
+        cv2.setTrackbarPos('Smax', 'Params', 256)
+        cv2.setTrackbarPos('Vmax', 'Params', 256)
 
         cv2.setTrackbarPos('Rmin', 'Params', 0)
         cv2.setTrackbarPos('Rmax', 'Params', 200)

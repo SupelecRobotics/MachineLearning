@@ -2,17 +2,14 @@ import socket
 import cv2
 import numpy
 
-def recvall(sock, count):
-    buf = b''
-    while count:
-        newbuf = sock.recv(count)
-        if not newbuf: return None
-        buf += newbuf
-        count -= len(newbuf)
-    return buf
-
 TCP_IP = ''
-TCP_PORT = 5003
+TCP_PORT = 5001
+
+cap = cv2.VideoCapture(0)
+cap.set(CV_CAP_PROP_FRAME_WIDTH, 800)
+cap.set(CV_CAP_PROP_FRAME_HEIGTH, 600)
+
+encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -22,19 +19,14 @@ conn, addr = s.accept()
 
 end  = False
 
-cv2.namedWindow('SERVER')
+while(cap.isOpened() and not end):
 
-while(not end):
-
-    length = recvall(conn,16)
-    stringData = recvall(conn, int(length))
-    data = numpy.fromstring(stringData, dtype='uint8')
-
-    decimg=cv2.imdecode(data,1)
-    cv2.imshow('SERVER',decimg)
-
-    if(cv2.waitKey(1) & 0xFF == ord('q')):
-        end = True
+    ret,frame = cap.read()
+    if(ret):
+        result, imgencode = cv2.imencode('.jpg', frame, encode_param)
+        data = numpy.array(imgencode)
+        stringData = data.tostring()
+        conn.send( str(len(stringData)).ljust(16))
+        conn.send( stringData )
 
 s.close()
-cv2.destroyAllWindows() 
